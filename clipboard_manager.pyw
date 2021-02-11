@@ -9,8 +9,6 @@ class Application(tkinter.Tk):
         self.create_create_clip_button()
         self.create_wipe_clips_button()
         self.load_new_clip_file("saved_clips")
-        for clip in self.clips_list:
-            self.create_new_clip_button(clip)
 
 
     def setup_initial_variables(self):
@@ -34,6 +32,8 @@ class Application(tkinter.Tk):
         except:
             self.clips_list = []
             self.update_saved_clips()
+        for clip in self.clips_list:
+            self.create_new_clip_button(clip)
         
 
     def update_saved_clips(self):
