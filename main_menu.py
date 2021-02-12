@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import simpledialog
 import os
 
 
@@ -17,6 +18,7 @@ class Main_menu(tk.Frame):
         create_clips_set_button = tk.Button(self)
         create_clips_set_button["text"] = "Create new clips set"
         create_clips_set_button.grid(row=0, column=0)
+        create_clips_set_button["command"] = self.create_clips_list_from_button
 
 
     def setup_labels(self):
@@ -52,7 +54,14 @@ class Main_menu(tk.Frame):
                 continue
             name = file[:-3]
             self.create_clips_list_select_button(name)
-            
+
+
+    def create_clips_list_from_button(self):
+        clipset_name = simpledialog.askstring(title = "Clipset creation",
+                                              prompt = "Enter clipset name:")
+        if clipset_name:
+            self.create_clips_list_select_button(clipset_name)
+            self.controller.load_clip_management_page(clipset_name)
         
     
         

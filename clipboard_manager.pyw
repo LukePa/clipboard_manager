@@ -8,9 +8,8 @@ class Application(tk.Tk):
         super().__init__()
         self.title("Clipboard Manager")
         self.current_frame = None
-        #self.load_main_menu()
-        self.load_clip_management_page("testing twat")
-        
+        self.load_main_menu()
+                
 
     def load_clip_management_page(self, clips_file_name):
         if self.current_frame != None:
@@ -45,7 +44,6 @@ class Clip_management_page(tk.Frame):
         self.current_y = self.initial_y
         try:
             os.mkdir('./clip_files')
-            print(os.getcwd())
         except:
             1+1
 
@@ -71,9 +69,8 @@ class Clip_management_page(tk.Frame):
 
 
     def wipe_clips(self):
-        self.destroy_current_buttons()
-        f = open(self.save_file_path, "wb")
-        f.close()
+        os.remove(self.save_file_path)
+        self.controller.load_main_menu()
 
 
     def create_create_clip_button(self):
