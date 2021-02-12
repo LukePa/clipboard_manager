@@ -1,5 +1,6 @@
 import pickle, os
 import tkinter as tk
+from main_menu import Main_menu
 
 
 class Application(tk.Tk):
@@ -7,7 +8,8 @@ class Application(tk.Tk):
         super().__init__()
         self.title("Clipboard Manager")
         self.current_frame = None
-        self.load_clip_management_page("testing")
+        #self.load_main_menu()
+        self.load_clip_management_page("testing twat")
         
 
     def load_clip_management_page(self, clips_file_name):
@@ -16,15 +18,24 @@ class Application(tk.Tk):
         c = Clip_management_page(clips_file_name, self)
         c.grid()
         self.current_frame = c
-    
+
+
+    def load_main_menu(self):
+        if self.current_frame != None:
+            self.current_frame.destroy()
+        main_menu = Main_menu(self)
+        main_menu.grid()
+        self.current_frame = main_menu
 
 
 class Clip_management_page(tk.Frame):
     def __init__(self, clips_file_name, controller):
         super().__init__(controller)
+        self.controller = controller
         self.setup_initial_variables()
         self.create_create_clip_button()
         self.create_wipe_clips_button()
+        self.create_main_menu_button()
         self.load_new_clip_file(clips_file_name)
 
 
@@ -72,7 +83,7 @@ class Clip_management_page(tk.Frame):
         new_clip_button.grid(column = 0, row = 0)
         clips_label = tk.Label(self)
         clips_label["text"] = "Created clips:"
-        clips_label.grid(column = 0, row = 1, columnspan = 2)
+        clips_label.grid(column = 0, row = 1, columnspan = 3)
 
 
     def create_wipe_clips_button(self):
@@ -82,26 +93,36 @@ class Clip_management_page(tk.Frame):
         wipe_clips_button.grid(column = 1, row = 0)
 
 
+    def create_main_menu_button(self):
+        main_menu_button = tk.Button(self)
+        main_menu_button["text"] = "<Click here to select a clipset>"
+        main_menu_button["command"] = self.controller.load_main_menu
+        main_menu_button.grid(column=2, row = 0)
+
+
     def create_new_clip_button(self, message):
         clip_button = tk.Button(self)
         clip_button["text"] = message
         clip_button["command"] = lambda: self.write_to_clipboard(message)
-        clip_button.grid(column = 0, row = self.current_y, columnspan = 2)
+        clip_button.grid(column = 0, row = self.current_y, columnspan = 3)
         self.current_y += 1
         self.buttons_list.append(clip_button)
 
 
     def create_new_clip_button_from_clipboard(self):
         """Verifies clipboard is valid before creating a new clip button"""
-        message = self.clipboard_get()
-        if message == "":
-            return None
-        elif message in self.clips_list:
-            return None
-        self.create_new_clip_button(message)
-        self.clips_list.append(message)
-        self.update_saved_clips()
-
+        try:
+            message = self.clipboard_get()
+            if message == "":
+                return None
+            elif message in self.clips_list:
+                return None
+            self.create_new_clip_button(message)
+            self.clips_list.append(message)
+            self.update_saved_clips()
+        except:
+            1+1
+        
 
     def destroy_current_buttons(self):
         self.current_y = self.initial_y
@@ -114,16 +135,6 @@ class Clip_management_page(tk.Frame):
             raise TypeError("Input String must be a string")
         self.clipboard_clear()
         self.clipboard_append(input_string)
-
-
-class Test(tk.Frame):
-    def __init__(self):
-        super().__init__()
-        self.label = tk.Label(self, text="Test")
-        self.label.grid(column = 0, row = 6)
-        self.label = tk.Label(self, text="Test2")
-        self.label.grid(column = 0, row = 5)
-
 
 
 
