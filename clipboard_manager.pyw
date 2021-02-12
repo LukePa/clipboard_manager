@@ -1,14 +1,31 @@
-import tkinter, pickle, os
+import pickle, os
+import tkinter as tk
 
 
-class Application(tkinter.Tk):
+class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Clipboard Manager")
+        self.current_frame = None
+        self.load_clip_management_page("testing")
+        
+
+    def load_clip_management_page(self, clips_file_name):
+        if self.current_frame != None:
+            self.current_frame.destroy()
+        c = Clip_management_page(clips_file_name, self)
+        c.grid()
+        self.current_frame = c
+    
+
+
+class Clip_management_page(tk.Frame):
+    def __init__(self, clips_file_name, controller):
+        super().__init__(controller)
         self.setup_initial_variables()
         self.create_create_clip_button()
         self.create_wipe_clips_button()
-        self.load_new_clip_file("saved_clips")
+        self.load_new_clip_file(clips_file_name)
 
 
     def setup_initial_variables(self):
@@ -49,24 +66,24 @@ class Application(tkinter.Tk):
 
 
     def create_create_clip_button(self):
-        self.new_clip_button = tkinter.Button()
-        self.new_clip_button["text"] = "<Click to create new clip>"
-        self.new_clip_button["command"] = self.create_new_clip_button_from_clipboard
-        self.new_clip_button.grid(column = 0, row = 0)
-        self.clips_label = tkinter.Label()
-        self.clips_label["text"] = "Created clips:"
-        self.clips_label.grid(column = 0, row = 1, columnspan = 2)
+        new_clip_button = tk.Button(self)
+        new_clip_button["text"] = "<Click to create new clip>"
+        new_clip_button["command"] = self.create_new_clip_button_from_clipboard
+        new_clip_button.grid(column = 0, row = 0)
+        clips_label = tk.Label(self)
+        clips_label["text"] = "Created clips:"
+        clips_label.grid(column = 0, row = 1, columnspan = 2)
 
 
     def create_wipe_clips_button(self):
-        self.wipe_clips_button = tkinter.Button()
-        self.wipe_clips_button["text"] = "<Click here to wipe clips>"
-        self.wipe_clips_button["command"] = self.wipe_clips
-        self.wipe_clips_button.grid(column = 1, row = 0)
+        wipe_clips_button = tk.Button(self)
+        wipe_clips_button["text"] = "<Click here to wipe clips>"
+        wipe_clips_button["command"] = self.wipe_clips
+        wipe_clips_button.grid(column = 1, row = 0)
 
 
     def create_new_clip_button(self, message):
-        clip_button = tkinter.Button()
+        clip_button = tk.Button(self)
         clip_button["text"] = message
         clip_button["command"] = lambda: self.write_to_clipboard(message)
         clip_button.grid(column = 0, row = self.current_y, columnspan = 2)
@@ -98,6 +115,14 @@ class Application(tkinter.Tk):
         self.clipboard_clear()
         self.clipboard_append(input_string)
 
+
+class Test(tk.Frame):
+    def __init__(self):
+        super().__init__()
+        self.label = tk.Label(self, text="Test")
+        self.label.grid(column = 0, row = 6)
+        self.label = tk.Label(self, text="Test2")
+        self.label.grid(column = 0, row = 5)
 
 
 
