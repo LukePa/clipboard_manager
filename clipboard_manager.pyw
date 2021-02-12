@@ -58,8 +58,7 @@ class Clip_management_page(tk.Frame):
         except:
             self.clips_list = []
             self.update_saved_clips()
-        for clip in self.clips_list:
-            self.create_new_clip_button(clip)
+        self.populate_clip_buttons()
         
 
     def update_saved_clips(self):
@@ -71,6 +70,13 @@ class Clip_management_page(tk.Frame):
     def wipe_clips(self):
         os.remove(self.save_file_path)
         self.controller.load_main_menu()
+
+
+    def remove_clip(self, clip_str):
+        self.destroy_current_buttons()
+        self.clips_list.remove(clip_str)
+        self.update_saved_clips()
+        self.populate_clip_buttons()
 
 
     def create_create_clip_button(self):
@@ -102,8 +108,18 @@ class Clip_management_page(tk.Frame):
         clip_button["text"] = message
         clip_button["command"] = lambda: self.write_to_clipboard(message)
         clip_button.grid(column = 0, row = self.current_y, columnspan = 3)
+        delete_clip_button = tk.Button(self)
+        delete_clip_button["text"] = "x"
+        delete_clip_button["command"] = lambda: self.remove_clip(message)
+        delete_clip_button.grid(column = 3, row = self.current_y)
         self.current_y += 1
         self.buttons_list.append(clip_button)
+        self.buttons_list.append(delete_clip_button)
+
+
+    def populate_clip_buttons(self):
+        for clip in self.clips_list:
+            self.create_new_clip_button(clip)
 
 
     def create_new_clip_button_from_clipboard(self):
@@ -125,7 +141,8 @@ class Clip_management_page(tk.Frame):
         self.current_y = self.initial_y
         for button in self.buttons_list:
             button.destroy()
-
+        self.buttons_list = []
+        
 
     def write_to_clipboard(self, input_string):
         if type(input_string) != str:
