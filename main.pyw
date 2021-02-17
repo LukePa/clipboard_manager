@@ -1,6 +1,8 @@
 import tkinter as tk
 from main_menu import Main_menu
 from clipboard_manager import Clip_management_page
+from clipboard_manager import Clip_list
+from clipboard_manager import Clip
 
 
 class Application(tk.Tk):

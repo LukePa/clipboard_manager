@@ -64,49 +64,20 @@ class Clip_board_manager_model(object):
 
     def __init__(self, clip_manager_page, clips_file_name):
         self.ui = clip_manager_page
-        self.setup_initial_variables()
-        self.load_new_clip_file(clips_file_name)
-        
-    def setup_initial_variables(self):
-        self.clips_list = []
-        try:
-            os.mkdir('./clip_files')
-        except:
-            1+1
+        self.load_new_clip_list(clips_file_name)
 
-    def load_new_clip_file(self, filename):
+    def load_new_clip_list(self, filename):
         self.ui.destroy_current_buttons()
-        self.save_file_path = './clip_files/' + filename + ".pk"
-        try:
-            f = open(self.save_file_path, "rb")
-            self.clips_list = pickle.load(f)
-            f.close()
-        except:
-            self.clips_list = []
-            self.update_saved_clips()
-        self.convert_strings_to_clips()
+        self.clips_list = Clip_list(filename)
         self.populate_clip_buttons()
 
-    def convert_strings_to_clips(self):
-        for i in range(len(self.clips_list)):
-            clip = self.clips_list[i]
-            if type(clip) == str:
-                clipObj = Clip(clip)
-                self.clips_list[i] = clipObj
-
-    def update_saved_clips(self):
-        f = open(self.save_file_path, "wb")
-        pickle.dump(self.clips_list, f)
-        f.close()
-
     def wipe_clips(self):
-        os.remove(self.save_file_path)
+        self.clips_list.delete_save()
         self.ui.controller.load_main_menu()
 
     def remove_clip(self, clip):
         self.ui.destroy_current_buttons()
         self.clips_list.remove(clip)
-        self.update_saved_clips()
         self.populate_clip_buttons()
 
     def write_to_clipboard(self, input_string):
@@ -132,7 +103,6 @@ class Clip_board_manager_model(object):
             clip = Clip(message)
             self.ui.create_new_clip_button(clip)
             self.clips_list.append(clip)
-            self.update_saved_clips()
         except Exception as error:
             print(error)
 
@@ -140,6 +110,52 @@ class Clip_board_manager_model(object):
         for clip in self.clips_list:
             self.ui.create_new_clip_button(clip)
 
+
+class Clip_list(list):
+
+    def __init__(self, filename):
+        super().__init__()
+        self.filepath = './clip_files/' + filename + ".pk"
+        self.load_new_clip_file()
+        self.update_saved_clips()
+
+    def load_new_clip_file(self):
+        try:
+            os.mkdir('./clip_files')
+        except:
+            1+1
+        try:
+            f = open(self.filepath, "rb")
+            clips_list = pickle.load(f)
+            super().__init__(clips_list)
+            f.close()
+        except Exception as err:
+            self.update_saved_clips()
+        self.convert_strings_to_clips()
+
+    def update_saved_clips(self):
+        f = open(self.filepath, "wb")
+        pickle.dump(self, f)
+        f.close()
+
+    def convert_strings_to_clips(self):
+        for i in range(len(self)):
+            clip = self[i]
+            if type(clip) == str:
+                clipObj = Clip(clip)
+                self[i] = clipObj
+        self.update_saved_clips()
+
+    def delete_save(self):
+        os.remove(self.filepath)
+
+    def append(self, item):
+        super().append(item)
+        self.update_saved_clips()
+
+    def remove(self, item):
+        super().remove(item)
+        self.update_saved_clips()
 
 
 class Clip(object):
