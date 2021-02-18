@@ -1,5 +1,6 @@
 import pickle, os
 import tkinter as tk
+from tkinter import simpledialog
 from main_menu import Main_menu
 
 
@@ -44,10 +45,14 @@ class Clip_management_page(tk.Frame):
         clip_button["text"] = clip.get_title()
         clip_button["command"] = lambda: self.model.write_to_clipboard(clip.get_message())
         clip_button.grid(column = 0, row = self.current_y, columnspan = 3)
+        edit_title_button = tk.Button(self)
+        edit_title_button["text"] = "e"
+        edit_title_button["command"] = lambda: self.model.edit_clip_title(clip)
+        edit_title_button.grid(column = 3, row = self.current_y)
         delete_clip_button = tk.Button(self)
         delete_clip_button["text"] = "x"
         delete_clip_button["command"] = lambda: self.model.remove_clip(clip)
-        delete_clip_button.grid(column = 3, row = self.current_y)
+        delete_clip_button.grid(column = 4, row = self.current_y)
         self.current_y += 1
         self.buttons_list.append(clip_button)
         self.buttons_list.append(delete_clip_button)
@@ -107,8 +112,16 @@ class Clip_board_manager_model(object):
             print(error)
 
     def populate_clip_buttons(self):
+        self.ui.destroy_current_buttons()
         for clip in self.clips_list:
             self.ui.create_new_clip_button(clip)
+
+    def edit_clip_title(self, clip):
+        new_title = simpledialog.askstring(title="Rename clip",
+                                           prompt="Enter new clip title (blank to reset)")
+        clip.set_title(new_title)
+        self.clips_list.update_saved_clips()
+        self.populate_clip_buttons()
 
 
 class Clip_list(list):
@@ -166,9 +179,9 @@ class Clip(object):
 
     def get_title(self):
         if self._title:
-            return self._title
+            return "Title: " + self._title
         else:
-            return self._message
+            return "Raw: " + self._message
 
     def set_title(self, title):
         if type(title) != str:
