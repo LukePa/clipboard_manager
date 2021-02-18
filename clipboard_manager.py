@@ -49,6 +49,7 @@ class Clip_management_page(tk.Frame):
         edit_title_button["text"] = "e"
         edit_title_button["command"] = lambda: self.model.edit_clip_title(clip)
         edit_title_button.grid(column = 3, row = self.current_y)
+        self.buttons_list.append(edit_title_button)
         delete_clip_button = tk.Button(self)
         delete_clip_button["text"] = "x"
         delete_clip_button["command"] = lambda: self.model.remove_clip(clip)
