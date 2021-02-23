@@ -182,7 +182,11 @@ class Clip(object):
         if self._title:
             return "Title: " + self._title
         else:
-            return "Raw: " + self._message
+            print(len(self._message))
+            if len(self._message) <= 100:
+                return "Raw: " + self._message
+            else:
+                return "Raw: " + self._message[:100] + " //CONT//"
 
     def set_title(self, title):
         if type(title) != str:
